@@ -71,7 +71,7 @@ export function generateTopicDataItem(topics: Topic[]): DataItem[] {
             link: url,
             likes_count: topic.likes_count,
             readers_count: topic.readers_count,
-            comments_count: topic.comments_count
+            comments_count: topic.comments_count,
         };
     });
 }
