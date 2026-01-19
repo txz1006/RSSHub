@@ -1,0 +1,8 @@
+{
+    "version": 1,
+    "build": {
+        "env": {
+          "TZ": "Asia/Shanghai"
+        }
+    }
+}
