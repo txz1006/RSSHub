@@ -6,7 +6,7 @@ import got from '@/utils/got';
 import { parseDate } from '@/utils/parse-date';
 
 export const route: Route = {
-    path: '/hainan/iitb/tzgg',
+    path: '/iitb/tzgg',
     categories: ['government'],
     example: '/gov/hainan/iitb/tzgg',
     url: 'iitb.hainan.gov.cn/iitb/tzgg/list2.shtml',
@@ -34,7 +34,7 @@ async function handler() {
 
         const titleElement = elem.find('.list-right_title a');
         const link = titleElement.attr('href') || '';
-        const title = titleElement.text().trim() || '';
+        const title = titleElement.text() || '';
         const dateText = elem.find('td[align="left"]').text().replace('发布时间：', '').trim();
         const department = elem.find('.column-name').text().trim();
 

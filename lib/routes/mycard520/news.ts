@@ -11,7 +11,7 @@ import { parseDate } from '@/utils/parse-date';
 
 export const handler = async (ctx: Context): Promise<Data> => {
     const { category = 'cardgame' } = ctx.req.param();
-    const limit: number = Number.parseInt(ctx.req.query('limit') ?? '18', 10);
+    const limit = Number(ctx.req.query('limit') ?? '18');
 
     const baseUrl = 'https://app.mycard520.com.tw';
     const targetUrl: string = new URL(`category/${category.endsWith('/') ? category : `${category}/`}`, baseUrl).href;
@@ -20,11 +20,9 @@ export const handler = async (ctx: Context): Promise<Data> => {
     const $: CheerioAPI = load(response);
     const language = $('html').attr('lang') ?? 'zh-TW';
 
-    let items: DataItem[] = [];
-
     $('div.page_numbers').remove();
 
-    items = $('div#tab1 ul li')
+    let items: DataItem[] = $('div#tab1 ul li')
         .slice(0, limit)
         .toArray()
         .map((el): Element => {
@@ -32,7 +30,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
             const $aEl: Cheerio<Element> = $el.find('a');
 
             const title: string = $el.find('div.text_box p').text();
-            const description: string | undefined = $aEl.html() ?? undefined;
+            const description = $aEl.html();
             const pubDateStr: string | undefined = $el.find('div.date').text().trim();
             const linkUrl: string | undefined = $aEl.attr('href');
             const image: string | undefined = $el.find('div.img_box img').attr('src');
@@ -44,8 +42,8 @@ export const handler = async (ctx: Context): Promise<Data> => {
                 pubDate: pubDateStr ? parseDate(pubDateStr) : undefined,
                 link: linkUrl,
                 content: {
-                    html: description ?? '',
-                    text: description ?? '',
+                    html: description,
+                    text: description,
                 },
                 image,
                 banner: image,
@@ -69,12 +67,12 @@ export const handler = async (ctx: Context): Promise<Data> => {
                     const $$pageBox: Cheerio<Element> = $$('div.page_box');
 
                     const title: string = $$pageBox.find('h2').text();
-                    const pubDateStr: string | undefined = $$('div.date').first().text();
+                    const pubDateStr: string | undefined = $$('div.date').text();
                     const upDatedStr: string | undefined = pubDateStr;
 
                     $$pageBox.find('h2, div.date, .the_champ_sharing_container').remove();
 
-                    const description: string | undefined = $$pageBox.html() ?? item.description;
+                    const description: string | null | undefined = $$pageBox.html() ?? item.description;
 
                     const processedItem: DataItem = {
                         title,
@@ -150,8 +148,7 @@ export const route: Route = {
 
 | [最新遊戲](https://app.mycard520.com.tw/category/cardgame/) | [手機遊戲](https://app.mycard520.com.tw/category/cardgame-mobile/)       | [PC 遊戲](https://app.mycard520.com.tw/category/cardgame-pc/)    | [電競賽事](https://app.mycard520.com.tw/category/cardgame-esports/)        | [實況直播](https://app.mycard520.com.tw/category/cardgame-live/)     |
 | ----------------------------------------------------------- | ------------------------------------------------------------------------ | ---------------------------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| [cardgame](https://rsshub.app/mycard520/category/cardgame)  | [cardgame-mobile](https://rsshub.app/mycard520/category/cardgame-mobile) | [cardgame-pc](https://rsshub.app/mycard520/category/cardgame-pc) | [cardgame-esports](https://rsshub.app/mycard520/category/cardgame-esports) | [cardgame-live](https://rsshub.app/mycard520/category/cardgame-live) |
-`,
+| [cardgame](https://rsshub.app/mycard520/category/cardgame)  | [cardgame-mobile](https://rsshub.app/mycard520/category/cardgame-mobile) | [cardgame-pc](https://rsshub.app/mycard520/category/cardgame-pc) | [cardgame-esports](https://rsshub.app/mycard520/category/cardgame-esports) | [cardgame-live](https://rsshub.app/mycard520/category/cardgame-live) |`,
     categories: ['game'],
     features: {
         requireConfig: false,
@@ -239,7 +236,6 @@ export const route: Route = {
 
 | [最新游戏](https://app.mycard520.com.tw/category/cardgame/) | [手机游戏](https://app.mycard520.com.tw/category/cardgame-mobile/)       | [PC 游戏](https://app.mycard520.com.tw/category/cardgame-pc/)    | [电竞赛事](https://app.mycard520.com.tw/category/cardgame-esports/)        | [实况直播](https://app.mycard520.com.tw/category/cardgame-live/)     |
 | ----------------------------------------------------------- | ------------------------------------------------------------------------ | ---------------------------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| [cardgame](https://rsshub.app/mycard520/category/cardgame)  | [cardgame-mobile](https://rsshub.app/mycard520/category/cardgame-mobile) | [cardgame-pc](https://rsshub.app/mycard520/category/cardgame-pc) | [cardgame-esports](https://rsshub.app/mycard520/category/cardgame-esports) | [cardgame-live](https://rsshub.app/mycard520/category/cardgame-live) |
-`,
+| [cardgame](https://rsshub.app/mycard520/category/cardgame)  | [cardgame-mobile](https://rsshub.app/mycard520/category/cardgame-mobile) | [cardgame-pc](https://rsshub.app/mycard520/category/cardgame-pc) | [cardgame-esports](https://rsshub.app/mycard520/category/cardgame-esports) | [cardgame-live](https://rsshub.app/mycard520/category/cardgame-live) |`,
     },
 };

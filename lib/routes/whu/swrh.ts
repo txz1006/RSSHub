@@ -69,7 +69,7 @@ async function handler(ctx) {
                       item = $(item);
                       return {
                           title: item.find('a b.am-text-truncate').text().trim(),
-                          pubDate: item.find('a i').text().trim(),
+                          pubDate: item.find('a i').text(),
                           link: new URL(item.find('a').attr('href'), baseUrl).href,
                       };
                   })
@@ -79,7 +79,7 @@ async function handler(ctx) {
                       item = $(item);
                       return {
                           title: item.find('a span').text().trim(),
-                          pubDate: item.find('a i').text().trim(),
+                          pubDate: item.find('a i').text(),
                           link: new URL(item.find('a').attr('href'), baseUrl).href,
                       };
                   });
@@ -89,7 +89,7 @@ async function handler(ctx) {
             cache.tryGet(item.link, async () => {
                 // 首先检查是否是微信公众号
                 item.description = item.link.includes('weixin')
-                    ? await fetchArticle(item.link).then((article) => article.description)
+                    ? (await fetchArticle(item.link)).description
                     : await (async () => {
                           try {
                               const response = await got(item.link);
@@ -109,7 +109,7 @@ async function handler(ctx) {
     items = items.filter((item) => item !== null);
 
     return {
-        title: $('title').first().text(),
+        title: $('title').text(),
         link,
         item: items,
     };

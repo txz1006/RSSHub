@@ -19,18 +19,18 @@ async function loadContent(link) {
 
     // 去除全文末尾多余内容
     $('.lookMore').remove();
-    $('script, style').remove();
+    $('style').remove();
     $('#loginDialog').remove();
 
     // 获取第一个帖子对象
     const firstpost = $('.firstpost');
 
     // 修改图片中的链接
-    firstpost.find('ignore_js_op img').each(function () {
-        $(this).attr('src', $(this).attr('file'));
+    firstpost.find('ignore_js_op img').each((_, el) => {
+        $(el).attr('src', $(el).attr('file'));
         // 移除无用属性
         for (const attr of ['id', 'aid', 'zoomfile', 'file', 'zoomfile', 'class', 'onclick', 'title', 'inpost', 'alt', 'onmouseover']) {
-            $(this).removeAttr(attr);
+            $(el).removeAttr(attr);
         }
     });
 
@@ -70,7 +70,7 @@ const ProcessFeed = (list, caches) => {
             const other = await caches.tryGet(itemUrl, () => loadContent(itemUrl));
 
             // 合并解析后的结果集作为该篇文章最终的输出结果
-            return Object.assign({}, single, other);
+            return { ...single, ...other };
         },
         { concurrency: 2 }
     ); // 设置并发请求数量为 2

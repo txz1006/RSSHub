@@ -48,11 +48,11 @@ async function handler(ctx) {
 
             const itemUrl = path.startsWith('http') ? path : host + path;
             return cache.tryGet(itemUrl, async () => {
-                let description = '';
+                let description: string;
                 if (itemUrl) {
                     const result = await got(itemUrl);
                     const $ = load(result.data);
-                    description = $('.read .wp_articlecontent').length ? $('.read .wp_articlecontent').html().trim() : itemTitle;
+                    description = $('.read .wp_articlecontent').length ? $('.read .wp_articlecontent').html() : itemTitle;
                 } else {
                     description = itemTitle;
                 }

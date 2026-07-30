@@ -5,20 +5,22 @@ import got from '@/utils/got';
 
 export const route: Route = {
     path: '/',
+    categories: ['journal'],
+    example: '/globallawreview',
     radar: [
         {
             source: ['globallawreview.org/Magazine/GetIssueContentList', 'globallawreview.org/'],
             target: '',
         },
     ],
-    name: 'Unknown',
+    name: '期刊',
     maintainers: ['nczitzk'],
     handler,
     url: 'globallawreview.org/Magazine/GetIssueContentList',
 };
 
 async function handler(ctx) {
-    const limit = ctx.req.query('limit') ? Number.parseInt(ctx.req.query('limit'), 10) : 30;
+    const limit = ctx.req.query('limit') ? Number(ctx.req.query('limit')) : 30;
 
     const rootUrl = 'http://www.globallawreview.org';
 
@@ -45,12 +47,12 @@ async function handler(ctx) {
                 title: a.text(),
                 link,
                 description: item.find('p.p2').html(),
-                author: item.find('p.p3 span').text() || a.text().split('：')[0],
+                author: item.find('p.p3 span').text() || a.text().split('：', 1)[0],
                 category: [
                     item
                         .find('p.p4')
                         .text()
-                        .match(/] (\d+\.\d+);/)[1],
+                        .match(/\] (\d+\.\d+);/)[1],
                 ],
                 enclosure_url: link,
                 enclosure_length:

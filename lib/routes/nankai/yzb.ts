@@ -28,8 +28,8 @@ export const route: Route = {
     name: '研究生招生网',
     maintainers: ['sddzhyc'],
     description: `| 硕士招生 | 博士招生 | 港澳台研究生最新信息 |
-| -------- | -------- | -------- |
-| 5509     | 2552    | 2562   |`,
+| -------- | -------- | -------------------- |
+| 5509     | 2552     | 2562                 |`,
     url: 'yzb.nankai.edu.cn',
     handler: async (ctx) => {
         // 从 URL 参数中获取通知分类
@@ -57,7 +57,7 @@ export const route: Route = {
                 return {
                     title: $a.text(),
                     link: linkStr,
-                    pubDate: timezone(parseDate(dateList[index]), +8),
+                    pubDate: timezone(parseDate(dateList[index]), 8),
                 };
             });
 
@@ -66,7 +66,7 @@ export const route: Route = {
                 cache.tryGet(item.link.toString(), async () => {
                     const { data: response } = await got(item.link);
                     const $ = load(response);
-                    item.description = $('.read').first().html();
+                    item.description = $('.read').html();
 
                     // 提取PDF链接，先转换为数组再使用map
                     const pdfLinks = $('div[pdfsrc$=".pdf"]')

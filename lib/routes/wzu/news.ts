@@ -39,10 +39,10 @@ async function loadContent(link) {
     // 图片相对链接处理
     $('img').attr('src', (n, v) => new URL(v, baseUrl).href);
     // 视频相对链接处理，替换原有播放方法 showVsbVideo
-    $('.vsbcontent_video').each(function () {
-        const u1 = $(this).find('script').attr('vurl');
+    $('.vsbcontent_video').each((_, el) => {
+        const u1 = $(el).find('script').attr('vurl');
         videoUrl = new URL(u1, baseUrl).href;
-        return $(this)
+        $(el)
             .html('<video width="100%" src="' + videoUrl + '"></video>')
             .html();
     });
@@ -52,7 +52,13 @@ async function loadContent(link) {
 
 export const route: Route = {
     path: '/news/:type?',
-    name: 'Unknown',
+    categories: ['university'],
+    example: '/wzu/news/0',
+    parameters: { type: '分类，见下表 默认为`0`' },
+    description: `| 温大新闻 | 媒体温大 | 学术温大 | 通知公告 | 招标信息 | 学术公告 |
+| :------: | :------: | :------: | :------: | :------: | :------: |
+|     0    |     1    |     2    |     3    |     4    |     5    |`,
+    name: '新闻',
     maintainers: ['Chandler-Lu'],
     handler,
 };

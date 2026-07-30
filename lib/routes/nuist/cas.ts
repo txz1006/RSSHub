@@ -42,7 +42,7 @@ async function handler(ctx) {
         .map((item) => {
             item = $(item);
             return {
-                title: item.find('.Title').text().trim(),
+                title: item.find('.Title').text(),
                 link: new URL(item.find('.Title').attr('href'), baseUrl).href,
                 pubDate: parseDate(
                     item
@@ -58,9 +58,8 @@ async function handler(ctx) {
     const items = await Promise.all(
         list.map((item) =>
             cache.tryGet(item.link, async () => {
-                let response;
                 try {
-                    response = await got(item.link);
+                    const response = await got(item.link);
                     const $ = load(response.data);
 
                     const authorMatch = $('.zzxx')
@@ -74,7 +73,7 @@ async function handler(ctx) {
                                 .text()
                                 .match(/发布时间:(\d{4}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2})/)[1]
                         ),
-                        +8
+                        8
                     );
                     item.description = $('#vsb_content').html();
                 } catch {

@@ -13,10 +13,10 @@ const getArticleDetail = (link) =>
         // Prefer tags to slug
         let categories = $('.tag')
             .toArray()
-            .map((el) => $(el).text().trim());
+            .map((el) => $(el).text());
 
         if (categories.length < 1) {
-            const slug = $('.slug a').contents().first().text().trim();
+            const slug = $('.slug a').contents().first().text();
 
             if (slug) {
                 categories = [slug];
@@ -91,7 +91,7 @@ export const route: Route = {
     name: 'News',
     maintainers: ['bennyyip'],
     handler,
-    description: `Provide full article RSS for CBC topics.`,
+    description: 'Provide full article RSS for CBC topics.',
 };
 
 async function handler(ctx) {

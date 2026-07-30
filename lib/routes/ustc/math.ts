@@ -59,7 +59,7 @@ async function handler(ctx) {
         .toArray()
         .map((item) => {
             const elem = $(item);
-            const title = elem.find('.Article_Title > a').attr('title').trim();
+            const title = elem.find('.Article_Title > a').attr('title');
             let link = elem.find('.Article_Title > a').attr('href');
             link = link.startsWith('/') ? host + link : link;
             // Assume that the articles are published at 12:00 UTC+8
@@ -74,10 +74,9 @@ async function handler(ctx) {
     items = await Promise.all(
         items.map((item) =>
             cache.tryGet(item.link, async () => {
-                let desc = '';
                 try {
                     const response = await got(item.link);
-                    desc = load(response.data)('div.wp_articlecontent').html();
+                    const desc: string = load(response.data)('div.wp_articlecontent').html();
                     item.description = desc;
                 } catch {
                     // Intranet only contents

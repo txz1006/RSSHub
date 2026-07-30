@@ -9,13 +9,25 @@ import { parseDate } from '@/utils/parse-date';
 import { renderDescription } from './templates/description';
 
 export const route: Route = {
-    path: '*',
-    name: 'Unknown',
-    maintainers: [],
+    path: '/latest-article/:sort{.+}?',
+    categories: ['new-media'],
+    example: '/thenewslens/latest-article',
+    parameters: { sort: '排序方式，见下表，可在对应排序页 URL 中找到' },
+    description: `| 最新文章 | 最多觀看 | 最多分享 | 本日      | 本週     | 本月      | 今年     | 去年         | 有史以來    |
+| -------- | -------- | -------- | --------- | -------- | --------- | -------- | ------------ | ----------- |
+|          | hot      | social   | hot/today | hot/week | hot/month | hot/year | hot/lastYear | hot/history |`,
+    radar: [
+        {
+            source: ['thenewslens.com/latest-article/:sort?', 'thenewslens.com/'],
+            target: '/latest-article/:sort?',
+        },
+    ],
+    name: '最新',
+    maintainers: ['nczitzk'],
     handler,
 };
 
-async function handler(ctx) {
+export async function handler(ctx) {
     const rootUrl = 'https://www.thenewslens.com';
     const currentUrl = `${rootUrl}${getSubPath(ctx) === '/' ? '/latest-article' : getSubPath(ctx)}`;
 
@@ -59,10 +71,10 @@ async function handler(ctx) {
                 content('a[data-sk="tooltip_parent"]').parent().remove();
                 content('.ad-section, .recommender-title, .navigation-content').remove();
 
-                content('.article-img-container').each(function () {
-                    content(this).replaceWith(
+                content('.article-img-container').each((_, el) => {
+                    content(el).replaceWith(
                         renderDescription({
-                            image: content(this).find('img')?.attr('data-srcset').split('?')[0] ?? undefined,
+                            image: content(el).find('img')?.attr('data-srcset').split('?', 1)[0] ?? undefined,
                         })
                     );
                 });
@@ -73,7 +85,7 @@ async function handler(ctx) {
                     .toArray()
                     .map((t) => content(t).attr('content'));
                 item.description = renderDescription({
-                    image: content('meta[property="og:image"]')?.attr('content').split('?')[0] ?? undefined,
+                    image: content('meta[property="og:image"]')?.attr('content').split('?', 1)[0] ?? undefined,
                     description: content('.article-main-box, article[itemprop="articleBody"]').html(),
                 });
 

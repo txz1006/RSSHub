@@ -9,13 +9,15 @@ import { renderEshopHkDescription } from './templates/eshop-hk';
 
 export const route: Route = {
     path: '/eshop/hk',
+    categories: ['game'],
+    example: '/nintendo/eshop/hk',
     radar: [
         {
             source: ['nintendo.com.hk/software/switch', 'nintendo.com.hk/'],
         },
     ],
-    name: 'Unknown',
-    maintainers: [],
+    name: 'eShop New Game Releases (HK)',
+    maintainers: ['HFO4'],
     handler,
     url: 'nintendo.com.hk/software/switch',
 };
@@ -50,7 +52,7 @@ async function handler(ctx) {
                     const gallery = JSON.parse(
                         $('[type=text/x-magento-init]')
                             .text()
-                            .match(/{\n\s+"\[data-gal{2}ery-role=gal{2}ery-placeholder]": {\n\s+"mage(?:\/gal{2}ery){2}".*?}{4}(?:\s+}\n){3}/s)
+                            .match(/\{\n\s+"\[data-gal{2}ery-role=gal{2}ery-placeholder\]": \{\n\s+"mage(?:\/gal{2}ery){2}".*?\}{4}(?:\s+\}\n){3}/s)
                     );
 
                     description = renderEshopHkDescription({
@@ -60,7 +62,7 @@ async function handler(ctx) {
                         host: 'store.nintendo.com.hk',
                     });
                 } else if (item.link.startsWith('https://ec.nintendo.com/')) {
-                    const jsonData = JSON.parse(response.match(/NXSTORE\.titleDetail\.jsonData = ({.*?});/)[1]);
+                    const jsonData = JSON.parse(response.match(/NXSTORE\.titleDetail\.jsonData = (\{.*?\});/)[1]);
                     const { data: priceData } = await got('https://ec.nintendo.com/api/HK/zh/guest_prices', {
                         searchParams: {
                             ns_uids: jsonData.id,

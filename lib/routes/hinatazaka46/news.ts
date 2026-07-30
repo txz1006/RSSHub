@@ -24,7 +24,7 @@ export const route: Route = {
         },
     ],
     name: 'Hinatazaka46 News 日向坂 46 新闻',
-    maintainers: ['crispgm', 'akashigakki'],
+    maintainers: ['crispgm', 'AkashiGakki'],
     handler,
     url: 'hinatazaka46.com/s/official/news/list',
 };
@@ -48,7 +48,7 @@ async function handler(ctx) {
 
             return {
                 title: item.find('.c-news__text').text(),
-                link: `${rootUrl}${item.attr('href').split('?')[0]}`,
+                link: `${rootUrl}${item.attr('href').split('?', 1)[0]}`,
                 pubDate: parseDate(item.find('.c-news__date').text()),
             };
         });

@@ -10,7 +10,7 @@ import ofetch from '@/utils/ofetch';
 import { parseDate } from '@/utils/parse-date';
 
 export const handler = async (ctx: Context): Promise<Data> => {
-    const limit: number = Number.parseInt(ctx.req.query('limit') ?? '30', 10);
+    const limit = Number(ctx.req.query('limit') ?? '30');
 
     const baseUrl = 'http://mysql.taobao.org';
     const targetUrl: string = new URL('monthly/', baseUrl).href;
@@ -19,10 +19,9 @@ export const handler = async (ctx: Context): Promise<Data> => {
     const $: CheerioAPI = load(response);
     const language = $('html').attr('lang') ?? 'zh';
 
-    let items: DataItem[] = [];
     let count = 0;
 
-    items = await Promise.all(
+    let items: DataItem[] = await Promise.all(
         $('h3 a.main')
             .toArray()
             .map(async (monthlyEl): Promise<Element[] | undefined> => {
@@ -80,7 +79,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
                     const $$: CheerioAPI = load(detailResponse);
 
                     const title: string = $$('h2').first().text()?.trim() || item.title;
-                    const description: string | undefined = $$('div.content').html() ?? undefined;
+                    const description = $$('div.content').html();
                     const pubDateStr: string | undefined = item.link.split(/monthly\//).pop();
                     const authorEls: Element[] = $$('div.block p').toArray();
                     const authors: DataItem['author'] = authorEls.map((authorEl) => {

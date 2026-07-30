@@ -36,7 +36,7 @@ export const route: Route = {
 
 async function handler(ctx) {
     const { category, game } = ctx.req.param();
-    const limit = ctx.req.query('limit') ? Number.parseInt(ctx.req.query('limit'), 10) : 10;
+    const limit = ctx.req.query('limit') ? Number(ctx.req.query('limit')) : 10;
 
     let url = `${baseUrl}/information`;
     if (category) {
@@ -81,7 +81,12 @@ async function handler(ctx) {
     );
 
     return {
-        title: 'ALICESOFT ' + $('article h2').clone().children().remove().end().text(),
+        title:
+            'ALICESOFT ' +
+            $('article h2')
+                .contents()
+                .filter((_, node) => node.type === 'text')
+                .text(),
         link: url,
         item: items,
         language: 'ja',

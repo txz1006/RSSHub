@@ -56,13 +56,13 @@ async function handler(ctx) {
         .toArray()
         .map((elem) => {
             const item = $(elem);
-            const enclosure = item.find('enclosure').first();
+            const enclosure = item.find('enclosure');
             const mediaContent = item.find(String.raw`media\:content`).toArray()[0];
             const thumbnail = item.find(String.raw`media\:thumbnail`).toArray()[0];
             return {
                 title: item.find('title').text(),
                 description: item.find('description').text(),
-                link: item.find('link').text().split('?utm_source')[0],
+                link: item.find('link').text().split('?utm_source', 1)[0],
                 author: item.find('author').text(),
                 pubDate: parseDate(item.find('pubDate').text()),
                 enclosure_url: enclosure?.attr('url'),

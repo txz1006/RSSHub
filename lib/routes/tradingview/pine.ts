@@ -6,20 +6,27 @@ import { parseDate } from '@/utils/parse-date';
 
 export const route: Route = {
     path: '/pine/:version?',
+    categories: ['program-update'],
+    example: '/tradingview/pine',
+    parameters: {
+        version: 'Version, see below, `v5` by default',
+    },
     radar: [
         {
             source: ['tradingview.com/pine-script-docs/en/:version/Release_notes.html'],
             target: '/pine/:version',
         },
     ],
-    name: 'Unknown',
-    maintainers: [],
+    name: 'Pine Script™ Release notes',
+    maintainers: ['nczitzk'],
     handler,
+    description: `| v5 | v4 |
+| -- | -- |`,
 };
 
 async function handler(ctx) {
     const { version = 'v5' } = ctx.req.param();
-    const limit = ctx.req.query('limit') ? Number.parseInt(ctx.req.query('limit'), 10) : 100;
+    const limit = ctx.req.query('limit') ? Number(ctx.req.query('limit')) : 100;
 
     const rootUrl = 'https://www.tradingview.com';
     const currentUrl = new URL(`pine-script-docs/en/${version}/Release_notes.html`, rootUrl).href;

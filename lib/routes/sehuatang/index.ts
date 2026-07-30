@@ -41,6 +41,12 @@ const forumIdMaps = {
 
 export const route: Route = {
     path: ['/bt/:subforumid?', '/picture/:subforumid', '/:subforumid?/:type?', '/:subforumid?', ''],
+    categories: ['multimedia'],
+    example: '/sehuatang/36/368',
+    parameters: {
+        subforumid: '版块 id 或板块名称（见下表）, 为空默认高清中文字幕',
+        type: '类型 id, 可在分区类型过滤后的 URL 中找到',
+    },
     name: 'Forum',
     maintainers: ['qiwihui', 'junfengP', 'nczitzk'],
     handler,
@@ -53,7 +59,7 @@ export const route: Route = {
 | -------- | ------------ | ------------ | ------------ | -------- | ------- | -------- | -------- | -------- | -------- | -------- |
 | gcyc     | yzwmyc       | yzymyc       | gqzwzm       | sjxz     | vr      | srym     | omwm     | hgzb     | dmyc     | zhtl     |
 
-  **色花图片**
+**色花图片**
 
 | 原创自拍 | 转贴自拍 | 华人街拍 | 亚洲性爱 | 欧美性爱 | 卡通动漫 | 套图下载 |
 | -------- | -------- | -------- | -------- | -------- | -------- | -------- |
@@ -77,7 +83,7 @@ const getSafeId = () =>
 
 async function handler(ctx) {
     const subformName = ctx.req.param('subforumid') ?? 'gqzwzm';
-    const subformId = subformName in forumIdMaps ? forumIdMaps[subformName] : subformName;
+    const subformId = Object.hasOwn(forumIdMaps, subformName) ? forumIdMaps[subformName] : subformName;
     const type = ctx.req.param('type');
     const typefilter = type ? `&filter=typeid&typeid=${type}` : '';
     const link = `${host}forum.php?mod=forumdisplay&orderby=dateline&fid=${subformId}${typefilter}`;

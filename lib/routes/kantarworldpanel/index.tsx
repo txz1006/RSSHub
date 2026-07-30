@@ -9,14 +9,87 @@ import { parseDate } from '@/utils/parse-date';
 
 export const route: Route = {
     path: '/:region?/:category{.+}?',
-    name: 'Unknown',
-    maintainers: [],
+    categories: ['new-media'],
+    example: '/kantarworldpanel/cn-en/news',
+    parameters: { region: 'Region id, see below, Chinese Mainland English by default', category: 'Category, can be found in URL, News by default' },
+    name: 'News Centre',
+    maintainers: ['nczitzk'],
     handler,
+    description: `| Region      | id    |
+| ----------- | ----- |
+| China Eng   | cn-en |
+| China 中文  | cn    |
+| Indonesia   | id    |
+| Korea       | kr    |
+| Malaysia    | my    |
+| Philippines | ph    |
+| Taiwan      | tw    |
+| Thailand    | th    |
+| Vietnam     | vn    |
+
+<details>
+  <summary>More categories</summary>
+
+#### China Eng
+
+| News | Retail Snapshot | Publications         | In the media |
+| ---- | --------------- | -------------------- | ------------ |
+| news | publications    | publications/Reports | In-the-media |
+
+#### China 中文
+
+| 新闻发布 | 零售市场快报 | 市场报告                    | 媒体报道       |
+| -------- | ------------ | --------------------------- | -------------- |
+| news     | publications | publications/China-Insights | press-releases |
+
+#### Indonesia
+
+| News | Kantar Scoop                  | Video Series      | Podcast      | Ready, Steady, Shop!     | Asia Pulse      |
+| ---- | ----------------------------- | ----------------- | ------------ | ------------------------ | --------------- |
+| News | News/Kantar-Worldpanel-Series | News/video-series | News/podcast | News/asia-shopper-series | News/Asia-Pulse |
+
+#### Korea
+
+| News | Insight Reports | In the Media   |
+| ---- | --------------- | -------------- |
+| news | publications    | press-releases |
+
+#### Malaysia
+
+| News |
+| ---- |
+| news |
+
+#### Philippines
+
+| Latest Insights | In the Media | Events |
+| --------------- | ------------ | ------ |
+| Latest-Insights | In-the-Media | events |
+
+#### Taiwan
+
+| 聚焦台灣                 | WOW SPOT     | 市場報告     | 媒體報導       | 活動   |
+| ------------------------ | ------------ | ------------ | -------------- | ------ |
+| news/spotlight-on-taiwan | news/wowspot | publications | press-releases | events |
+
+#### Thailand
+
+| News |
+| ---- |
+| news |
+
+#### Vietnam
+
+| Insights | FMCG Monitor      | Ready, Steady, Shop!   | Asia Pulse      | IN THE MEDIA |
+| -------- | ----------------- | ---------------------- | --------------- | ------------ |
+| news     | news/FMCG-Monitor | news/ready-steady-shop | news/asia-pulse | In-the-media |
+
+</details>`,
 };
 
 async function handler(ctx) {
     const { region = 'cn-en', category = 'news' } = ctx.req.param();
-    const limit = ctx.req.query('limit') ? Number.parseInt(ctx.req.query('limit'), 10) : 30;
+    const limit = ctx.req.query('limit') ? Number(ctx.req.query('limit')) : 30;
 
     const rootUrl = 'https://www.kantarworldpanel.com/';
     const currentUrl = new URL(`${region}/${category}`, rootUrl).href;
@@ -67,7 +140,8 @@ async function handler(ctx) {
                 // eg. https://www.kantarworldpanel.com/dwl.php?sn=publications&id=1632.
                 if (item.link === currentUrl || !item.link.startsWith(rootUrl)) {
                     return item;
-                } else if (/dwl\.php/.test(item.link)) {
+                }
+                if (/dwl\.php/.test(item.link)) {
                     item.enclosure_url = item.link;
                     item.enclosure_type = 'application/pdf';
 

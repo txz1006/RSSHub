@@ -26,12 +26,13 @@ export type Category =
     | 'study'
     | 'journal'
     | 'finance'
+    | 'sport'
     | 'other';
 
 // rss
 export type DataItem = {
     title: string;
-    description?: string;
+    description?: string | null;
     pubDate?: number | string | Date;
     link?: string;
     category?: string[];
@@ -46,9 +47,10 @@ export type DataItem = {
     guid?: string;
     id?: string;
     content?: {
-        html: string;
-        text: string;
+        html?: string | null;
+        text?: string | null;
     };
+    summary?: string;
     image?: string;
     banner?: string;
     updated?: number | string | Date;
@@ -79,7 +81,7 @@ export type DataItem = {
 
 export type Data = {
     title: string;
-    description?: string;
+    description?: string | null;
     link?: string;
     item?: DataItem[];
     allowEmpty?: boolean;
@@ -330,7 +332,7 @@ interface RouteItem {
               }>
             | false;
 
-        /** set to `true` if the feed uses puppeteer */
+        /** set to `true` if the feed uses browser automation */
         requirePuppeteer?: boolean;
 
         /** set to `true` if the target website has an anti-crawler mechanism */

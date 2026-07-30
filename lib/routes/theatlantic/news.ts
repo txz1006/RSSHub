@@ -24,13 +24,13 @@ export const route: Route = {
         },
     ],
     name: 'News',
-    maintainers: ['EthanWng97', 'pseudoyu'],
+    maintainers: ['IvanWng97', 'pseudoyu'],
     handler,
     description: `| Popular      | Latest | Politics | Technology | Business |
 | ------------ | ------ | -------- | ---------- | -------- |
 | most-popular | latest | politics | technology | business |
 
-  More categories (except photo) can be found within the navigation bar at [https://www.theatlantic.com](https://www.theatlantic.com)`,
+More categories (except photo) can be found within the navigation bar at <https://www.theatlantic.com>`,
 };
 
 async function handler(ctx) {

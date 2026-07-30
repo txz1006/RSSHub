@@ -41,16 +41,15 @@ export const route: Route = {
     name: 'News',
     maintainers: ['quiniapiezoelectricity'],
     handler,
-    description: `
-| Language | English | Bahasa Malaysia | 华文     |
-| -------- | ------ | ------- | ------ | 
-| \`:lang\`  | \`en\`    | \`my\`   | \`zh\`    |
+    description: `| Language | English | Bahasa Malaysia | 华文 |
+| -------- | ------- | --------------- | ---- |
+| \`:lang\`  | \`en\`    | \`my\`            | \`zh\` |
 
-| Category               | \`:category\` |
-| ---------------------- | ------------- |
-| News                   | \`news\`      |
-| Columns                | \`columns\`   |
-| From Our Readers       | \`letters\`   |`,
+| Category         | \`:category\` |
+| ---------------- | ----------- |
+| News             | \`news\`      |
+| Columns          | \`columns\`   |
+| From Our Readers | \`letters\`   |`,
     radar: [
         {
             source: ['malaysiakini.com/'],
@@ -162,9 +161,7 @@ async function handler(ctx) {
                 if (response.data.stories.author) {
                     item.author = response.data.stories.author;
                 }
-                if (response.data.stories.tags) {
-                    item.category = response.data.stories.tags;
-                }
+                item.category = response.data.stories.tags;
                 return item;
             })
         )

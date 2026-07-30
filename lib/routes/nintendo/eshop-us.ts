@@ -5,13 +5,15 @@ import { renderEshopUsDescription } from './templates/eshop-us';
 
 export const route: Route = {
     path: '/eshop/us',
+    categories: ['game'],
+    example: '/nintendo/eshop/us',
     radar: [
         {
             source: ['nintendo.com/store/games', 'nintendo.com/'],
         },
     ],
-    name: 'Unknown',
-    maintainers: [],
+    name: 'eShop New Game Releases (US)',
+    maintainers: ['HFO4'],
     handler,
     url: 'nintendo.com/store/games',
 };
@@ -34,9 +36,9 @@ async function handler(ctx) {
 
     ctx.set('json', response.data);
     return {
-        title: `Nintendo eShop（美服）新游戏`,
-        link: `https://www.nintendo.com/store/games/`,
-        description: `Nintendo eShop（美服）新上架的游戏`,
+        title: 'Nintendo eShop（美服）新游戏',
+        link: 'https://www.nintendo.com/store/games/',
+        description: 'Nintendo eShop（美服）新上架的游戏',
         item: data.map((item) => ({
             title: item.title,
             description: renderEshopUsDescription(item),

@@ -36,7 +36,7 @@ async function process(baseUrl: string, section: any) {
             const img = i.find('img').attr('src');
             const link = `${baseUrl}${i.find('h3>a').attr('href')}`;
             return {
-                title: i.find('h3>a').text().trim(),
+                title: i.find('h3>a').text(),
                 link,
                 pubDate: parseDate(i.find('p.time').text()),
                 itunes_item_image: `${baseUrl}${img}`,
@@ -49,8 +49,8 @@ async function process(baseUrl: string, section: any) {
                 const $ = load(r);
                 j.description = $('.details-con')
                     .html()!
-                    .replaceAll(/<o:p>[\S\s]*?<\/o:p>/g, '')
-                    .replaceAll(/(<p[^>]*>&nbsp;<\/p>\s*)+/gm, '<p>&nbsp;</p>');
+                    .replaceAll(/<o:p>[\s\S]*?<\/o:p>/g, '')
+                    .replaceAll(/(<p[^>]*>&nbsp;<\/p>\s*)+/g, '<p>&nbsp;</p>');
                 return j;
             })
         )

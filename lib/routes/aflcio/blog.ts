@@ -10,7 +10,7 @@ import ofetch from '@/utils/ofetch';
 import { parseDate } from '@/utils/parse-date';
 
 export const handler = async (ctx: Context): Promise<Data> => {
-    const limit: number = Number.parseInt(ctx.req.query('limit') ?? '5', 10);
+    const limit = Number(ctx.req.query('limit') ?? '5');
 
     const baseUrl = 'https://aflcio.org';
     const targetUrl: string = new URL('blog', baseUrl).href;
@@ -19,9 +19,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
     const $: CheerioAPI = load(response);
     const language = $('html').attr('lang') ?? 'en';
 
-    let items: DataItem[] = [];
-
-    items = $('article.article')
+    let items: DataItem[] = $('article.article')
         .slice(0, limit)
         .toArray()
         .map((el): Element => {
@@ -29,7 +27,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
             const $aEl: Cheerio<Element> = $el.find('header.container h1 a').first();
 
             const title: string = $aEl.text();
-            const description: string | undefined = $el.find('div.section').html() ?? '';
+            const description = $el.find('div.section').html();
             const pubDateStr: string | undefined = $el.find('div.date-timeline time').attr('datetime');
             const linkUrl: string | undefined = $aEl.attr('href');
             const authorEls: Element[] = $el.find('div.date-timeline a.user').toArray();
@@ -76,7 +74,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
                     const $$: CheerioAPI = load(detailResponse);
 
                     const title: string = $$('header.article-header h1').text();
-                    const description: string | undefined = $$('div.section-article-body').html() ?? '';
+                    const description = $$('div.section-article-body').html();
                     const pubDateStr: string | undefined = $$('time').attr('datetime');
                     const authorEls: Element[] = $$('div.byline a[property="schema:name"]').toArray();
                     const authors: DataItem['author'] = authorEls.map((authorEl) => {

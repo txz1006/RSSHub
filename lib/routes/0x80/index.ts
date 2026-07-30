@@ -18,7 +18,6 @@ export const route: Route = {
 function extractDateFromURL(url: string) {
     const regex = /\d{4}-\d{2}-\d{2}/;
     const match = url.match(regex);
-
     return match ? match[0] : null;
 }
 
@@ -42,7 +41,7 @@ async function handler() {
             item = $(item);
 
             const link = item.attr('href') || '';
-            const title = item.text() || '';
+            const title = item.text();
             const pubDate = extractDateFromURL(link);
 
             return {

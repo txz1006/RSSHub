@@ -76,21 +76,21 @@ const parseItem = (item) =>
 
         content.find('img').each((_, e) => {
             if (e.attribs.src?.includes('?')) {
-                e.attribs.src = e.attribs.src.split('?')[0];
+                e.attribs.src = e.attribs.src.split('?', 1)[0];
             }
         });
 
         content.find('p a').each((_, e) => {
-            e = $(e);
-            if (e.text().startsWith('下一頁為')) {
-                e.remove();
+            const $e = $(e);
+            if ($e.text().startsWith('下一頁為')) {
+                $e.remove();
             }
         });
 
         content.find('iframe').each((_, e) => {
-            e = $(e);
-            if (e.attr('src').startsWith('https://www.facebook.com/plugins/like.php')) {
-                e.remove();
+            const $e = $(e);
+            if ($e.attr('src')?.startsWith('https://www.facebook.com/plugins/like.php')) {
+                $e.remove();
             }
         });
 

@@ -7,13 +7,15 @@ import { parseDate } from '@/utils/parse-date';
 
 export const route: Route = {
     path: '/',
+    categories: ['programming'],
+    example: '/distill',
     radar: [
         {
             source: ['distill.pub/'],
             target: '',
         },
     ],
-    name: 'Unknown',
+    name: 'Latest',
     maintainers: ['nczitzk'],
     handler,
     url: 'distill.pub/',
@@ -52,8 +54,8 @@ async function handler() {
 
                 content('d-contents').remove();
 
-                content('img').each(function () {
-                    content(this).attr('src', `${item.link}/${content(this).attr('src')}`);
+                content('img').each((_, el) => {
+                    content(el).attr('src', `${item.link}/${content(el).attr('src')}`);
                 });
 
                 item.doi = content('meta[name="citation_doi"]').attr('content');

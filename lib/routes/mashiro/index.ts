@@ -19,7 +19,7 @@ export const route: Route = {
             source: ['mashiro.best/', 'mashiro.best/:lang/'],
         },
     ],
-    name: `Blog`,
+    name: 'Blog',
     maintainers: ['MuenYu'],
     handler: async (ctx) => {
         const { lang = 'en' } = ctx.req.param();
@@ -49,7 +49,7 @@ export const route: Route = {
                 cache.tryGet(item.link, async () => {
                     const response = await ofetch(item.link);
                     const $ = load(response);
-                    item.description = $('.article-content').first().html();
+                    item.description = $('.article-content').html();
                     return item;
                 })
             )

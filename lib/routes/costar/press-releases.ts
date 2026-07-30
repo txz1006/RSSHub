@@ -11,7 +11,7 @@ import { parseDate } from '@/utils/parse-date';
 
 export const handler = async (ctx: Context): Promise<Data> => {
     const { filter } = ctx.req.param();
-    const limit: number = Number.parseInt(ctx.req.query('limit') ?? '10', 10);
+    const limit = Number(ctx.req.query('limit') ?? '10');
 
     const baseUrl = 'https://www.costar.com';
     const targetUrl: string = new URL(`products/benchmark/resources/press-releases${filter ? `?${filter}` : ''}`, baseUrl).href;
@@ -20,9 +20,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
     const $: CheerioAPI = load(response);
     const language = $('html').attr('lang') ?? 'en';
 
-    let items: DataItem[] = [];
-
-    items = $('div.views-row article')
+    let items: DataItem[] = $('div.views-row article')
         .slice(0, limit)
         .toArray()
         .map((el): Element => {
@@ -30,7 +28,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
             const $aEl: Cheerio<Element> = $el.find('a.coh-link').first();
 
             const title: string = $aEl.text();
-            const description: string | undefined = $el.find('div.coh-container').eq(3).html() ?? undefined;
+            const description = $el.find('div.coh-container').eq(3).html();
             const pubDateStr: string | undefined = $el.find('div.coh-container').eq(4).text();
             const linkUrl: string | undefined = $aEl.attr('href');
             const categoryEls: Element[] = $el.find('div.coh-style-tags a').toArray();
@@ -65,7 +63,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
                 const $$: CheerioAPI = load(detailResponse);
 
                 const title: string = $$('h1.coh-heading').text();
-                const description: string | undefined = $$('div.coh-body').html() ?? item.description;
+                const description: string | null | undefined = $$('div.coh-body').html() ?? item.description;
                 const pubDateStr: string | undefined = detailResponse.match(/"datePublished": "(.*?)",/)?.[1];
                 const upDatedStr: string | undefined = detailResponse.match(/"dateModified": "(.*?)",/)?.[1];
 
@@ -113,10 +111,9 @@ export const route: Route = {
             description: 'Filter',
         },
     },
-    description: `:::tip
-To subscribe to [Press Releases - Asia Pacific - Preliminary](https://www.costar.com/products/benchmark/resources/press-releases?region=406&tag=581), where the source URL is \`https://www.costar.com/products/benchmark/resources/press-releases?region=406&tag=581\`, extract the certain parts from this URL to be used as parameters, resulting in the route as [\`/costar/press-releases/region=406&tag=581\`](https://rsshub.app/costar/press-releases/region=406&tag=581).
-:::
-`,
+    description: `::: tip
+To subscribe to [Press Releases - Asia Pacific - Preliminary](https://www.costar.com/products/benchmark/resources/press-releases?region=406\\&tag=581), where the source URL is \`https://www.costar.com/products/benchmark/resources/press-releases?region=406&tag=581\`, extract the certain parts from this URL to be used as parameters, resulting in the route as [\`/costar/press-releases/region=406&tag=581\`](https://rsshub.app/costar/press-releases/region=406\\&tag=581).
+:::`,
     categories: ['new-media'],
     features: {
         requireConfig: false,

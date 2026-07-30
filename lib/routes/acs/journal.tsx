@@ -6,18 +6,27 @@ import { config } from '@/config';
 import type { Route } from '@/types';
 import cache from '@/utils/cache';
 import { parseDate } from '@/utils/parse-date';
-import puppeteer from '@/utils/puppeteer';
+import playwright from '@/utils/playwright';
 
 export const route: Route = {
     path: '/journal/:id',
+    categories: ['journal'],
+    example: '/acs/journal/jacsat',
+    parameters: { id: 'Journal id, can be found in URL' },
+    features: {
+        supportScihub: true,
+    },
     radar: [
         {
             source: ['pubs.acs.org/journal/:id', 'pubs.acs.org/'],
         },
     ],
-    name: 'Unknown',
+    name: 'Journal',
     maintainers: ['nczitzk'],
     handler,
+    description: `::: tip
+See [Browse Content](https://pubs.acs.org)
+:::`,
 };
 
 async function handler(ctx) {
@@ -28,21 +37,21 @@ async function handler(ctx) {
 
     let title = '';
 
-    const browser = await puppeteer();
+    const context = await playwright();
     const items = await cache.tryGet(
         currentUrl,
         async () => {
-            const page = await browser.newPage();
-            await page.setRequestInterception(true);
-            page.on('request', (request) => {
-                request.resourceType() === 'document' || request.resourceType() === 'script' ? request.continue() : request.abort();
+            const page = await context.newPage();
+            await page.route('**/*', (route) => {
+                const request = route.request();
+                request.resourceType() === 'document' || request.resourceType() === 'script' ? route.continue() : route.abort();
             });
             await page.goto(currentUrl, {
                 waitUntil: 'domcontentloaded',
             });
             await page.waitForSelector('.toc');
 
-            const html = await page.evaluate(() => document.documentElement.innerHTML);
+            const html = await page.evaluate(() => document.documentElement.getHTML());
             await page.close();
 
             const $ = load(html);
@@ -76,7 +85,7 @@ async function handler(ctx) {
         false
     );
 
-    await browser.close();
+    await context.close();
 
     return {
         title,

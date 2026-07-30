@@ -3,18 +3,25 @@ import { load } from 'cheerio';
 import type { Route } from '@/types';
 import cache from '@/utils/cache';
 import { parseDate } from '@/utils/parse-date';
-import puppeteer from '@/utils/puppeteer';
+import playwright from '@/utils/playwright';
 
 export const route: Route = {
     path: '/publications/:id',
+    categories: ['study'],
+    example: '/researchgate/publications/Somsak-Panha',
+    parameters: { id: 'Username, can be found in URL' },
+    features: {
+        requirePuppeteer: true,
+        antiCrawler: true,
+    },
     radar: [
         {
             source: ['researchgate.net/profile/:username'],
             target: '/publications/:username',
         },
     ],
-    name: 'Unknown',
-    maintainers: [],
+    name: 'Publications',
+    maintainers: ['nczitzk'],
     handler,
 };
 
@@ -23,14 +30,14 @@ async function handler(ctx) {
 
     const rootUrl = 'https://www.researchgate.net';
     const currentUrl = `${rootUrl}/profile/${id}`;
-    const browser = await puppeteer();
-    const page = await browser.newPage();
-    await page.setRequestInterception(true);
-    page.on('request', (request) => {
-        request.resourceType() === 'document' || request.resourceType() === 'script' ? request.continue() : request.abort();
+    const context = await playwright();
+    const page = await context.newPage();
+    await page.route('**/*', (route) => {
+        const request = route.request();
+        request.resourceType() === 'document' || request.resourceType() === 'script' ? route.continue() : route.abort();
     });
     await page.goto(currentUrl);
-    const response = await page.evaluate(() => document.documentElement.innerHTML);
+    const response = await page.evaluate(() => document.documentElement.getHTML());
     await page.close();
 
     const $ = load(response);
@@ -49,13 +56,13 @@ async function handler(ctx) {
     const items = await Promise.all(
         list.map((item) =>
             cache.tryGet(item.link, async () => {
-                const page = await browser.newPage();
-                await page.setRequestInterception(true);
-                page.on('request', (request) => {
-                    request.resourceType() === 'document' || request.resourceType() === 'script' ? request.continue() : request.abort();
+                const page = await context.newPage();
+                await page.route('**/*', (route) => {
+                    const request = route.request();
+                    request.resourceType() === 'document' || request.resourceType() === 'script' ? route.continue() : route.abort();
                 });
                 await page.goto(item.link);
-                const detailResponse = await page.evaluate(() => document.documentElement.innerHTML);
+                const detailResponse = await page.evaluate(() => document.documentElement.getHTML());
                 await page.close();
                 const content = load(detailResponse);
 
@@ -64,8 +71,8 @@ async function handler(ctx) {
 
                 const authors = [];
 
-                content('meta[property="citation_author"]').each(function () {
-                    authors.push(content(this).attr('content'));
+                content('meta[property="citation_author"]').each((_, el) => {
+                    authors.push(content(el).attr('content'));
                 });
 
                 item.author = authors.join(', ');
@@ -77,7 +84,7 @@ async function handler(ctx) {
         )
     );
 
-    await browser.close();
+    await context.close();
 
     return {
         title: `${$('meta[property="profile:username"]').attr('content')}'s Publications - ResearchGate`,

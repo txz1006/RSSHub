@@ -20,7 +20,7 @@ export const route: Route = {
         supportScihub: false,
     },
     name: 'Sakurazaka46 Blog 櫻坂 46 博客',
-    maintainers: ['victor21813', 'nczitzk', 'akashigakki'],
+    maintainers: ['victor21813', 'nczitzk', 'AkashiGakki'],
     handler,
     description: `Member ID
 
@@ -85,7 +85,7 @@ async function handler(ctx) {
             return {
                 title: item.text(),
                 author: item.find('.name').text(),
-                link: `${rootUrl}${item.attr('href').split('?')[0]}`,
+                link: `${rootUrl}${item.attr('href').split('?', 1)[0]}`,
             };
         });
 
@@ -100,7 +100,7 @@ async function handler(ctx) {
                 const content = load(detailResponse.data);
 
                 item.description = content('.box-article').html();
-                item.pubDate = timezone(parseDate(content('.blog-foot .date').text()), +9);
+                item.pubDate = timezone(parseDate(content('.blog-foot .date').text()), 9);
 
                 return item;
             })

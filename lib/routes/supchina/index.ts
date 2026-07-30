@@ -7,13 +7,15 @@ import { parseDate } from '@/utils/parse-date';
 
 export const route: Route = {
     path: '/',
+    categories: ['new-media'],
+    example: '/supchina',
     radar: [
         {
             source: ['supchina.com/feed', 'supchina.com/'],
             target: '',
         },
     ],
-    name: 'Unknown',
+    name: 'Feed',
     maintainers: ['nczitzk'],
     handler,
     url: 'supchina.com/feed',
@@ -43,7 +45,7 @@ async function handler(ctx) {
                 author: item
                     .find(String.raw`dc\:creator`)
                     .html()
-                    .match(/CDATA\[(.*?)]/)[1],
+                    .match(/CDATA\[(.*?)\]/)[1],
                 category: item
                     .find('category')
                     .toArray()
@@ -51,7 +53,7 @@ async function handler(ctx) {
                         (c) =>
                             $(c)
                                 .html()
-                                .match(/CDATA\[(.*?)]/)[1]
+                                .match(/CDATA\[(.*?)\]/)[1]
                     ),
                 pubDate: parseDate(item.find('pubDate').text()),
             };

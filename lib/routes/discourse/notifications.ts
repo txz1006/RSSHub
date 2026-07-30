@@ -24,7 +24,7 @@ export const route: Route = {
         supportScihub: false,
     },
     name: 'Notifications',
-    maintainers: [],
+    maintainers: ['dzx-dzx'],
     handler,
     description: `::: warning
 If you opt to enable \`fulltext\` feature, consider adding \`limit\` parameter to your query to avoid sending too many request.
@@ -53,9 +53,8 @@ async function handler(ctx) {
                         const { cooked } = await ofetch(post_link, { headers: { 'User-Api-Key': key } });
                         return { ...e, description: cooked };
                     });
-                } else {
-                    return e;
                 }
+                return e;
             })
         );
     }

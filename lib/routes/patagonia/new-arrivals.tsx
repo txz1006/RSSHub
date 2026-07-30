@@ -15,7 +15,7 @@ function extractSfrmUrl(url) {
     const urlObj = new URL(url);
     const sfrmValue = urlObj.searchParams.get('sfrm');
     urlObj.search = new URLSearchParams({ sfrm: sfrmValue }).toString();
-    return urlObj.toString();
+    return urlObj.href;
 }
 export const route: Route = {
     path: '/new-arrivals/:category',
@@ -31,7 +31,7 @@ export const route: Route = {
         supportScihub: false,
     },
     name: 'New Arrivals',
-    maintainers: [],
+    maintainers: ['IvanWng97'],
     handler,
     description: `| Men's | Women's | Kids' & Baby | Packs & Gear |
 | ----- | ------- | ------------ | ------------ |

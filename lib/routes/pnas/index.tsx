@@ -8,21 +8,34 @@ import cache from '@/utils/cache';
 import got from '@/utils/got';
 import logger from '@/utils/logger';
 import { parseDate } from '@/utils/parse-date';
-import puppeteer from '@/utils/puppeteer';
-import { setCookies } from '@/utils/puppeteer-utils';
+import playwright from '@/utils/playwright';
+import { setCookies } from '@/utils/playwright-utils';
 
 export const route: Route = {
     path: '/:topicPath{.+}?',
+    categories: ['journal'],
+    example: '/pnas/latest',
+    parameters: {
+        topicPath: 'Topic path, support **Featured Topics**, **Articles By Topic** and [**Collected Papers**](https://www.pnas.org/about/collected-papers), `latest` by default',
+    },
+    features: {
+        requirePuppeteer: true,
+        antiCrawler: true,
+        supportScihub: true,
+    },
     radar: [
         {
             source: ['pnas.org/*topicPath'],
             target: '/:topicPath',
         },
     ],
-    name: 'Unknown',
-    maintainers: [],
+    name: 'Journal',
+    maintainers: ['emdoe', 'HenryQW', 'y9c'],
     handler,
     url: 'pnas.org/*topicPath',
+    description: `::: tip
+Some topics require adding \`topic/\` to \`topicPath\` like [\`/pnas/topic/app-math\`](https://rsshub.app/pnas/topic/app-math) and some don't like [\`/pnas/biophysics-and-computational-biology\`](https://rsshub.app/pnas/biophysics-and-computational-biology)
+:::`,
 };
 
 async function handler(ctx) {
@@ -53,16 +66,16 @@ async function handler(ctx) {
             };
         });
 
-    const browser = await puppeteer();
+    const context = await playwright();
 
     const out = await Promise.all(
         list.map((item) =>
             cache.tryGet(item.link, async () => {
-                const page = await browser.newPage();
+                const page = await context.newPage();
                 await setCookies(page, await cookieJar.getCookieString(item.link), '.pnas.org');
-                await page.setRequestInterception(true);
-                page.on('request', (request) => {
-                    request.resourceType() === 'document' ? request.continue() : request.abort();
+                await page.route('**/*', (route) => {
+                    const request = route.request();
+                    request.resourceType() === 'document' ? route.continue() : route.abort();
                 });
                 logger.http(`Requesting ${item.link}`);
                 await page.goto(item.link, {
@@ -71,7 +84,7 @@ async function handler(ctx) {
                 });
                 await page.waitForSelector('.core-container');
 
-                const res = await page.evaluate(() => document.documentElement.innerHTML);
+                const res = await page.evaluate(() => document.documentElement.getHTML());
                 await page.close();
 
                 const $ = load(res);
@@ -112,7 +125,7 @@ async function handler(ctx) {
         )
     );
 
-    await browser.close();
+    await context.close();
 
     return {
         title: `${$('.banner-widget__content h1').text()} - PNAS`,

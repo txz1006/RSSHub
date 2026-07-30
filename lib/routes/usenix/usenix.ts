@@ -22,7 +22,7 @@ export const route: Route = {
     maintainers: ['ZeddYu'],
     handler,
     url: 'usenix.org/conferences/all',
-    description: `Return results from 2020`,
+    description: 'Return results from 2020',
 };
 
 async function handler() {
@@ -52,7 +52,7 @@ async function handler() {
                     return {
                         title: item.find('h2.node-title > a').text().trim(),
                         link: `${url}${item.find('h2.node-title > a').attr('href')}`,
-                        author: item.find('div.field.field-name-field-paper-people-text.field-type-text-long.field-label-hidden p').text().trim(),
+                        author: item.find('div.field.field-name-field-paper-people-text.field-type-text-long.field-label-hidden p').text(),
                         pubDate,
                     };
                 });

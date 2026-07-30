@@ -10,7 +10,7 @@ import ofetch from '@/utils/ofetch';
 import { parseDate } from '@/utils/parse-date';
 
 export const handler = async (ctx: Context): Promise<Data> => {
-    const limit: number = Number.parseInt(ctx.req.query('limit') ?? '30', 10);
+    const limit = Number(ctx.req.query('limit') ?? '30');
 
     const baseUrl = 'https://kiro.dev';
     const targetUrl: string = new URL('changelog/', baseUrl).href;
@@ -19,16 +19,14 @@ export const handler = async (ctx: Context): Promise<Data> => {
     const $: CheerioAPI = load(response);
     const language = $('html').attr('lang') ?? 'en';
 
-    let items: DataItem[] = [];
-
-    items = $('a.block')
+    let items: DataItem[] = $('a.block')
         .slice(0, limit)
         .toArray()
         .map((el): Element => {
             const $el: Cheerio<Element> = $(el);
 
             const title = `${$el.parent().find('span').text()} ${$el.find('h3').text()}`;
-            const description: string | undefined = $el.parent().parent().find('div.prose').html() ?? undefined;
+            const description = $el.parent().parent().find('div.prose').html();
             const pubDateStr: string | undefined = $el.parent().parent().parent().find('time').text();
             const linkUrl: string | undefined = $el.attr('href');
             const upDatedStr: string | undefined = pubDateStr;
@@ -60,7 +58,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
                 const $$: CheerioAPI = load(detailResponse);
 
                 const title = `${$$('article span').first().text()} ${$$('article h3').text()}`;
-                const description: string | undefined = $$('div.prose').html() ?? undefined;
+                const description = $$('div.prose').html();
                 const pubDateStr: string | undefined = $$('time').text();
                 const image: string | undefined = $$('meta[property="og:image"]').attr('content');
                 const upDatedStr: string | undefined = pubDateStr;
